@@ -1,6 +1,0 @@
-setup.py
-gym_real.egg-info/PKG-INFO
-gym_real.egg-info/SOURCES.txt
-gym_real.egg-info/dependency_links.txt
-gym_real.egg-info/requires.txt
-gym_real.egg-info/top_level.txt
