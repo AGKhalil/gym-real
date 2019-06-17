@@ -65,8 +65,6 @@ class RealEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         #mujoco_env.MujocoEnv.__init__(self, '/home/brl/.mujoco/mujoco200/model/real.xml', 5)
         dirpath = os.path.dirname(os.path.realpath(__file__))
         fullpath = os.path.join(dirpath, "assets/real.xml")
-        print('DIRNAME', dirpath)
-        print('FULLPATH', fullpath)
         mujoco_env.MujocoEnv.__init__(self, fullpath, 5)
         utils.EzPickle.__init__(self)
 
@@ -104,9 +102,10 @@ class RealEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # print('position x: ', xposafter, '  y: ', yposafter, '  reward: ', reward)
         # print ("Euler orietation torso: ", quat_Matrix_After)
         
-        #termination criteria 
-        # done = bool((euler_Matrix_After[1] < -45.0) or (euler_Matrix_After[1] > 45.0))
-        done =False
+        # termination criteria
+        orientation = self.data.sensordata
+        orientation = np.round(orientation,2)
+        done = bool( (orientation[1] < -0.3) or (orientation[1] > 0.3) )
 
         ob = self._get_obs()
         return ob, reward, done, dict(
@@ -131,23 +130,19 @@ class RealEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         a11 = self.sim.data.qpos[18] * rad2deg
 
         # Orientation sensor
-        # orientation = self.data.sensordata
-        # print(orientation)
-
-        return np.array([a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11])
+        orientation = self.data.sensordata
+        orientation = np.round(orientation,2)
+        quatr = orientation[0]
+        quat1 = orientation[1]
+        quat2 = orientation[2]
+        quat3 = orientation[3]
+        OBS = [a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, quatr, quat1, quat2, quat3]
+        return np.array(OBS)
     
     # Reset by setting velocity = 0 and position to xml model values----------------------------------------------------
     def reset_model(self):
         qpos = self.init_qpos   # Initial + randomness
-        
-    
-        qpos[8] = deg2rad * 90. 
-        qpos[10] = deg2rad * 90. 
-        qpos[12] = deg2rad * 90. 
-        qpos[14] = deg2rad * 90.
    
-
-        
         qpos = qpos + self.np_random.uniform(size=self.model.nq, low=-.1, high=.1)  # add randomness
         
         qvel = self.init_qvel
