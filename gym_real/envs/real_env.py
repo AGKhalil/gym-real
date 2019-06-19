@@ -151,4 +151,4 @@ class RealEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     
     # Camera point--------------------------------------------------------------------------------------------------------
     def viewer_setup(self):
-        self.viewer.cam.lookat[1] += 0.3
+        self.viewer.cam.lookat[1] += 3
